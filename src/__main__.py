@@ -1,6 +1,6 @@
-from cProfile import run
 import os
 import shutil
+import requests
 import sys
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 from env import process_env_vars
@@ -10,7 +10,7 @@ from nginx import restart_nginx
 import repo
 import git
 import docker
-from utils import print_err, print_ok, print_status, run_interactive_command
+from utils import is_port_open, print_err, print_ok, print_status, run_interactive_command
 from config import DOCKER_HOST_PROXY_PORT_VAR_NAME, PROJECT_FILES_TO_COPY, WORK_DIR
 
 def add_project():
@@ -104,7 +104,25 @@ def update_project(project: Project = None):
     docker.prune()
 
     # Save project
+    print_status('Saving project')
     repo.save_project(project)
+
+    # Test project
+    print_status('Running tests')
+
+    if is_port_open(project.port):
+        print_ok(f'Port {project.port} is listening')
+    else:
+        print_ok(f'Be sure to listen on {project.port} (env var = {DOCKER_HOST_PROXY_PORT_VAR_NAME})')
+    
+    try:
+        http_response = requests.get(f'https://{project.domain_name}/')
+        if http_response.status_code == 502:
+            print_err('HTTP 502 Bad Gateway trying to connect via domain name. Make sure it didn\'t crash.')
+        else:
+            print_ok('HTTP request with result ' + http_response.status_code)
+    except:
+        print_err('Unable to connect to domain, double check DNS settings for ' + project.domain_name)
 
 def delete_project(project: Project = None):
     if project is None:

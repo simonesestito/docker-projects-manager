@@ -1,4 +1,5 @@
 import os
+import socket
 import subprocess
 import sys
 from typing import List
@@ -29,3 +30,11 @@ def print_ok(message: str):
 def print_err(message: str):
     print('\033[91;1m✕\033[0m ' + message)
 
+def is_port_open(port: int, host: str = 'localhost'):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+       s.connect((host, port))
+       s.shutdown(1)
+       return True
+    except:
+       return False
