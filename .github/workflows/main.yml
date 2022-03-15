@@ -16,5 +16,6 @@ jobs:
     - run: pyinstaller --onefile src/__main__.py
     - uses: actions/upload-artifact@v2
       with:
-        name: name-of-artifact
-        path: src/dist/__main__.py
+        name: project-manager
+        path: dist/__main__
+        if-no-files-found: error
