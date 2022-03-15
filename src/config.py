@@ -9,5 +9,5 @@ METADATA_JSON_FILE = 'docker-project-specs.json'
 DEFAULT_MIN_PORT = 10_000
 NGINX_CONFS_DIR = '/etc/nginx/sites-available'
 NGINX_ENABLED_DIR = '/etc/nginx/sites-enabled'
-PROJECT_FILES_TO_COPY = [ 'docker-compose.yml', 'docker-compose.override.yml' ]
+PROJECT_FILES_TO_COPY = [ 'docker-compose.yml' ]
 DOCKER_HOST_PROXY_PORT_VAR_NAME = 'DOCKER_HOST_PROXY_PORT'
