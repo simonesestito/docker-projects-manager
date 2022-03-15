@@ -4,7 +4,7 @@ from typing import List
 
 import validators
 from config import DEFAULT_MIN_PORT, WORK_DIR, METADATA_JSON_FILE
-from model import Project
+from data.model import Project
 
 def load_projects() -> List[Project]:
     return list(filter(lambda x: x is not None, (

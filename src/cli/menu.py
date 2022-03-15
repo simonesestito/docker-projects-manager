@@ -17,9 +17,9 @@ def show_menu(options: list, default=None) -> str:
 
 def ask_yes_no(question: str, default: bool) -> bool:
     if default:
-        reply = input(f'{question} [Y/n]')
+        reply = input(f'{question} [Y/n] ')
     else:
-        reply = input(f'{question} [y/N]')
+        reply = input(f'{question} [y/N] ')
     reply = reply.lower()
 
     if reply.startswith('y'): return True
