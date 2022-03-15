@@ -30,6 +30,11 @@ Actions:
   Delete a project, its images and, optionally, its volumes
 ```
 
+## Example usage
+<a href="https://asciinema.org/a/476861">
+  <img src="https://asciinema.org/a/476861.svg" alt="Asciinema recording" width="700" />
+</a>
+
 # Limitations
 Since building the full Docker image from sources it's heavy and not ideal on the deployment server, it only copies ```docker-compose.yml``` file from the git repository. Because of that, you need to build your images locally from source (e.g.: on your workstation) and then [pull them to a Registry](https://docs.docker.com/docker-hub/) (like Docker Hub).
 
