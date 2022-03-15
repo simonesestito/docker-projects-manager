@@ -35,3 +35,21 @@ Since building the full Docker image from sources it's heavy and not ideal on th
 
 # See also
 Do you need a script to do an initial server setup? Check out [this server setup script](https://gist.github.com/simonesestito/a15d11ca544e04865118b86834624084)
+
+# License
+    Copyright 2022 Simone Sestito
+    This file is part of "Docker Projects Manager".
+
+    "Docker Projects Manager" is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    "Docker Projects Manager" is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with "Docker Projects Manager".  If not, see <http://www.gnu.org/licenses/>.
+
