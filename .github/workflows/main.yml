@@ -9,13 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-
-    - name: Package Application
-      uses: JackMcKew/pyinstaller-action-linux@main
+    - uses: actions/setup-python@v2
       with:
-        path: src
-
+        python-version: 3.8.10
+    - run: pip install -r requirements.txt pyinstaller
+    - run: pyinstaller --onefile src/__main__.py
     - uses: actions/upload-artifact@v2
       with:
         name: name-of-artifact
-        path: src/dist/linux
+        path: src/dist/__main__.py
