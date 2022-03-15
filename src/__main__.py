@@ -107,21 +107,30 @@ def update_project(project: Project = None):
     print_status('Saving project')
     repo.save_project(project)
 
-    # Test project
-    print_status('Running tests')
+    test_project(project)
+
+def test_project(project: Project = None):
+    if project is None:
+        project = pick_project()
+    
+    if project is None:
+        return
+
+    print_status(f'Running tests on {project.name}')
 
     if is_port_open(project.port):
         print_ok(f'Port {project.port} is listening')
     else:
-        print_ok(f'Be sure to listen on {project.port} (env var = {DOCKER_HOST_PROXY_PORT_VAR_NAME})')
+        print_err(f'Be sure to listen on {project.port} (env var = {DOCKER_HOST_PROXY_PORT_VAR_NAME})')
     
     try:
         http_response = requests.get(f'https://{project.domain_name}/')
         if http_response.status_code == 502:
             print_err('HTTP 502 Bad Gateway trying to connect via domain name. Make sure it didn\'t crash.')
         else:
-            print_ok('HTTP request with result ' + http_response.status_code)
-    except:
+            print_ok(f'HTTP request with result {http_response.status_code}')
+    except Exception as e:
+        print_err(e)
         print_err('Unable to connect to domain, double check DNS settings for ' + project.domain_name)
 
 def delete_project(project: Project = None):
@@ -172,6 +181,7 @@ def main():
     menu.show_menu([
         ('add', 'Add project', add_project),
         ('update', 'Update project', update_project),
+        ('test', 'Test project', test_project),
         ('delete', 'Delete project', delete_project),
     ], sys.argv[1] if len(sys.argv) > 1 else None)()
 
