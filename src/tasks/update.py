@@ -7,8 +7,8 @@ from config import DOCKER_HOST_PROXY_PORT_VAR_NAME, PROJECT_FILES_TO_COPY
 from processing.env import process_env_vars
 from data.model import Project
 from tasks.test import test_project
-from utils import print_err, print_ok, print_status
-
+from utils.print import print_err, print_ok, print_status
+import utils.io
 
 def update_project(project: Project):
     print_status(f'Updating project {project.name}')
@@ -28,15 +28,13 @@ def update_project(project: Project):
             project.last_commit = git_commit
         
         # Copy necessary files
-        print_status('Copying new necessary files')
+        print_status('Copying new files from cloned repository')
         for file in PROJECT_FILES_TO_COPY:
-            from_file = os.path.join(repo_dir, file)
-            dest_file = os.path.join(project.dir_path, file)
-            if os.path.isfile(from_file):
-                print_ok(file)
-                shutil.copy(from_file, dest_file)
-            else:
-                print_err(file)
+            utils.io.copy_path(file, repo_dir, project.dir_path)
+        
+        print_status('Copying required Docker bind mounts')
+        for bind_path in docker.get_compose_bind_mounts(repo_dir):
+            utils.io.copy_path(bind_path, repo_dir, project.dir_path)
         
         # Process environment variables
         print_status('Processing environment variables')

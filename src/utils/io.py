@@ -16,14 +16,14 @@ def copy_path(rel_path: str, src: str, dest: str):
     if os.path.isfile(src_path):
         # Create folder structure
         dirs = os.path.dirname(rel_path)
-        os.makedirs(os.path.join(dest, dirs))
+        os.makedirs(os.path.join(dest, dirs), exist_ok=True)
 
         # Copy the actual file
         shutil.copyfile(src_path, dest_path)
 
     elif os.path.isdir(src_path):
         # Create destination folder
-        os.makedirs(dest_path)
+        os.makedirs(dest_path, exist_ok=True)
 
         # Copy child files
         for file in os.listdir(src_path):
