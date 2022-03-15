@@ -1,9 +1,10 @@
 import shutil
 from data.model import Project
 from services.nginx import restart_nginx
-from utils import print_err, print_status, run_interactive_command
+from utils.print import print_err, print_status
 from services import docker
 from cli import menu
+from utils.shell import run_interactive_command
 
 
 def delete_project(project: Project):

@@ -4,7 +4,7 @@ from cli import menu
 from data import repo
 from data.model import Project
 from tasks import add, delete, test, update
-from utils import print_err
+from utils.print import print_err
 
 def main():
     if os.getuid() == 0:

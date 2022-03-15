@@ -1,7 +1,8 @@
 import requests
 from config import DOCKER_HOST_PROXY_PORT_VAR_NAME
 from data.model import Project
-from utils import is_port_open, print_err, print_ok, print_status
+from utils.network import is_port_open
+from utils.print import print_err, print_ok, print_status
 
 
 def test_project(project: Project):

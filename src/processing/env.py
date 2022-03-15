@@ -1,7 +1,7 @@
-import os
 from typing import IO, List
 from collections import OrderedDict
-from utils import create_file, print_ok
+from utils.io import create_file
+from utils.print import print_ok
 
 
 def process_env_vars(local_env_file: str, cloned_env_file: str, override_vars: dict = None) -> List[str]:

@@ -2,7 +2,7 @@ from config import SSH_KEY_FILE
 from cli import menu
 import os
 from services import ssh_key
-from utils import run_interactive_command
+from utils.shell import run_interactive_command
 
 def ask_for_ssh_key(git_url: str):
     if git_url.startswith('git@') and not os.path.isfile(SSH_KEY_FILE):

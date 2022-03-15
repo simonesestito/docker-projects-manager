@@ -1,4 +1,4 @@
-from utils import run_interactive_command
+from utils.shell import run_interactive_command
 
 
 def restart_nginx():

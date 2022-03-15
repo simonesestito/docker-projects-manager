@@ -4,7 +4,8 @@ from config import WORK_DIR
 from services import git
 from data import repo
 from tasks.update import update_project
-from utils import print_status, run_interactive_command
+from utils.print import print_status
+from utils.shell import run_interactive_command
 from services.nginx import restart_nginx
 
 
