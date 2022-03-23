@@ -32,13 +32,14 @@ def process_env_vars(local_env_file: str, cloned_env_file: str, override_vars: d
         curr_vars = _parse_vars(cloned_env)
 
     for key, curr_value in curr_vars.items():
-        old_value = old_vars.get(key, '')
-        if curr_value == old_value:
-            print_ok(f'{key}="{old_value}"')
-            new_value = old_value
-        else:
+        old_value = old_vars.get(key, None)
+        if old_value is None:
+            # Ask unknown env variables value
             new_value = input(f'{key} [{curr_value}]:').strip()
             new_value = new_value or curr_value
+        else:
+            print_ok(f'{key}="{old_value}"')
+            new_value = old_value
         new_vars[key] = new_value
 
     # Override vars
