@@ -20,8 +20,7 @@ import sys, os
 from tempfile import NamedTemporaryFile
 from config import WORK_DIR, SSH_KEY_FILE
 from data import repo
-from tasks.update import update_project
-from utils.print import print_status, print_err
+from utils.print import print_status, print_err, print_ok
 from utils.shell import run_interactive_command
 from services.nginx import restart_nginx
 
@@ -56,4 +55,8 @@ def add_project():
     run_interactive_command('sudo', 'ln', '-s', project.nginx_file, project.nginx_link)
     restart_nginx()
 
-    update_project(project)
+    # Save project
+    print_status('Saving project')
+    repo.save_project(project)
+
+    print_ok(f'Populate .env file in {project.dir_path}, then run "{sys.argv[0]} update {project.name}"')

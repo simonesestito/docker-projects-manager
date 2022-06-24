@@ -61,7 +61,7 @@ def update_project(project: Project):
         print_status('Processing environment variables')
         cloned_env_file = os.path.join(repo_dir, '.env')
 
-        # Backup old env file
+        # Process env file
         if os.path.isfile(project.env_file):
             shutil.copy(project.env_file, project.env_file + '.bak')
         else:
