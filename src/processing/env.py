@@ -31,6 +31,7 @@ def process_env_vars(local_env_file: str, cloned_env_file: str, override_vars: d
         old_vars = _parse_vars(project_env)
         curr_vars = _parse_vars(cloned_env)
 
+    # Iterate through env vars found in cloned repo (probably, debug values)
     for key, curr_value in curr_vars.items():
         old_value = old_vars.get(key, None)
         if old_value is None:
@@ -45,6 +46,11 @@ def process_env_vars(local_env_file: str, cloned_env_file: str, override_vars: d
     # Override vars
     for key, value in override_vars.items():
         new_vars[key] = value
+
+    # Add local env vars not found in previous steps
+    for key, value in old_vars.items():
+        if key not in new_vars:
+            new_vars[key] = value
     
     # Finally, write new env vars
     with open(local_env_file, 'w') as project_env:
