@@ -61,6 +61,8 @@ def update_project(project: Project):
         # Backup old env file
         if os.path.isfile(project.env_file):
             shutil.copy(project.env_file, project.env_file + '.bak')
+        else:
+            print_err('.env file not found locally. Populate it with production env vars')
 
         process_env_vars(project.env_file, cloned_env_file, {
             DOCKER_HOST_PROXY_PORT_VAR_NAME: project.port,
