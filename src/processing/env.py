@@ -55,7 +55,7 @@ def process_env_vars(local_env_file: str, cloned_env_file: str, override_vars: d
     # Finally, write new env vars
     with open(local_env_file, 'w') as project_env:
         project_env.writelines([
-            f'{key}="{value}"'
+            f'{key}="{value}"\n'
             for key, value in new_vars.items()
         ])
 
