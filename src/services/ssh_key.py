@@ -21,6 +21,10 @@ from typing import List
 from config import SSH_KEY_FILE
 
 def input_ssh_key() -> List[str]:
+    print('Paste your private SSH key here, in order to login to GitHub')
+    print('It must end with -----END...')
+    print()
+    
     key = []
     while not key or not key[-1].startswith('-----END'):
         key.append(input())
