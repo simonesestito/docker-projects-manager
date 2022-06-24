@@ -24,10 +24,11 @@ def input_ssh_key() -> List[str]:
     print('Paste your private SSH key here, in order to login to GitHub')
     print('It must end with -----END...')
     print()
-    
+
     key = []
     while not key or not key[-1].startswith('-----END'):
         key.append(input())
+        key.append('\n')
     return key
 
 def save_ssh_key(key: List[str], file: str = SSH_KEY_FILE):
