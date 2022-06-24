@@ -17,7 +17,7 @@ along with "Docker Projects Manager".  If not, see <http://www.gnu.org/licenses/
 '''
 
 from services import git, docker
-import os
+import sys, os
 import shutil
 from data import repo
 from tempfile import TemporaryDirectory
@@ -39,8 +39,11 @@ def update_project(project: Project):
         # Check if needs update
         git_commit = git.get_last_commit(repo_dir)
         if git_commit == project.last_commit:
-            print_err('No update needed.')
-            return
+            if len(sys.argv) >= 4 and sys.argv[3] == '-f':
+                print_ok('Forcibly updating project')
+            else:
+                print_err(f'No update needed. Run "{sys.argv[0]} update {project.name} -f" to force an update.')
+                return
         else:
             print_ok(f'Updating to commit {git_commit}')
             project.last_commit = git_commit
