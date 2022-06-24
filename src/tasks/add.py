@@ -16,13 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with "Docker Projects Manager".  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import sys
+import sys, os
 from tempfile import NamedTemporaryFile
-from config import WORK_DIR
-from services import git
+from config import WORK_DIR, SSH_KEY_FILE
 from data import repo
 from tasks.update import update_project
-from utils.print import print_status
+from utils.print import print_status, print_err
 from utils.shell import run_interactive_command
 from services.nginx import restart_nginx
 
@@ -33,7 +32,8 @@ def add_project():
     # Input data
     git_url = sys.argv[2] if len(sys.argv) > 2 else input('Git URL: ')
     project_name = sys.argv[3] if len(sys.argv) > 3 else input('Project name (and subdomain): ')
-    git.ask_for_ssh_key(git_url)
+    if git_url.startswith('git@') and not os.path.isfile(SSH_KEY_FILE):
+      print_err('No SSH key found in ' + SSH_KEY_FILE)
 
     print_status(f'Saving new project to {WORK_DIR}')
     project = repo.add_project(project_name, git_url)
