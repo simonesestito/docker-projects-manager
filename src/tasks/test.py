@@ -22,10 +22,10 @@ from data.model import Project
 from utils.network import is_port_open
 from utils.print import print_err, print_ok, print_status
 
+NUM_TRIES, TRY_SLEEP = 5, 0.5
 
 def test_project(project: Project):
     print_status(f'Running tests on {project.name}')
-    NUM_TRIES, TRY_SLEEP = 5, 0.5
 
     # Test port listening
     for _ in range(NUM_TRIES):
@@ -36,16 +36,33 @@ def test_project(project: Project):
     else:
         print_err(f'Be sure to listen on {project.port} (env var = {DOCKER_HOST_PROXY_PORT_VAR_NAME})')
     
-    # Test HTTP connection
-    try:
-        for _ in range(NUM_TRIES):
-            time.sleep(TRY_SLEEP)
-            http_response = requests.get(f'http://localhost:{project.port}')
-            if http_response.status_code < 500:
-                print_ok(f'HTTP request with result {http_response.status_code}')
-                break
-        else:
-            print_err('HTTP 502 Bad Gateway trying to connect via localhost. Make sure it didn\'t crash.')
-    except Exception as e:
-        print_err(e)
-        print_err('Unable to connect to domain, double check DNS settings for ' + project.domain_name)
+    # Test HTTP connection (localhost)
+    _test_http(f'http://localhost:{project.port}')
+
+    # Test HTTP connection (server)
+    _test_http(f'https://{project.domain_name}')
+
+
+
+def _test_http(url: str):
+    host = url.split('://')[1].split(':')[0]
+    last_err, last_status = None, None
+
+    for _ in range(NUM_TRIES):
+        time.sleep(TRY_SLEEP)
+        last_err, last_status = None, None
+
+        try:
+            http_response = requests.get(url)
+            last_status = http_response.status_code
+            if last_status < 500:
+                print_ok(f'HTTP request with result {http_response.status_code}, trying to connect via {host}.')
+                return
+        except Exception as e:
+            last_err = e
+    
+    # Handle errors
+    if last_status is not None:
+        print_err(f'HTTP request failed with status {last_status}, trying to connect via {host}.')
+    else: # last_err is not None
+        print_err(f'HTTP request failed with error {last_err}, trying to connect via {host}.')
