@@ -41,7 +41,7 @@ def test_project(project: Project):
         for _ in range(NUM_TRIES):
             time.sleep(TRY_SLEEP)
             http_response = requests.get(f'http://localhost:{project.port}')
-            if http_response.status_code != 502:
+            if http_response.status_code < 500:
                 print_ok(f'HTTP request with result {http_response.status_code}')
                 break
         else:
