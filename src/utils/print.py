@@ -24,3 +24,6 @@ def print_ok(message: str):
 
 def print_err(message: str):
     print(f'\033[91;1m✕\033[0m {message}')
+
+def print_warn(message: str):
+    print(f'\033[93;1m!\033[0m {message}')
