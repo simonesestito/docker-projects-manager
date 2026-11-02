@@ -7,16 +7,23 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+        - runner: ubuntu-24.04
+          arch: amd64
+        - runner: ubuntu-24.04-arm
+          arch: arm64
+    runs-on: ${{ matrix.runner }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
         python-version: 3.11.1
     - run: pip install -r requirements.txt pyinstaller
-    - run: pyinstaller --onefile src/__main__.py
+    - run: pyinstaller --onefile --name project-manager src/__main__.py
     - uses: actions/upload-artifact@v4
       with:
-        name: project-manager
-        path: dist/__main__
+        name: project-manager-linux-${{ matrix.arch }}
+        path: dist/project-manager
         if-no-files-found: error
