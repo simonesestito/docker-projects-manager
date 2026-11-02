@@ -23,7 +23,8 @@ Actions:
 - add [GIT_URL] [PROJECT_NAME]
   Add a new project
 - update [PROJECT_NAME]
-  Update a project, pulling latest Docker images and files from Git repository
+  Update a project, pulling latest Docker images and files from Git repository.
+  If remote images are not available, build them locally from the project directory
 - test [PROJECT_NAME]
   Perform a series of tests on a project (e.g.: it's reachable via the domain name, it's listening, ...)
 - delete [PROJECT_NAME]
@@ -36,7 +37,9 @@ Actions:
 </a>
 
 # Limitations
-Since building the full Docker image from sources it's heavy and not ideal on the deployment server, it only copies ```docker-compose.yml``` file from the git repository. Because of that, you need to build your images locally from source (e.g.: on your workstation) and then [pull them to a Registry](https://docs.docker.com/docker-hub/) (like Docker Hub).
+Since building the full Docker image from sources it's heavy and not ideal on the deployment server, it normally only copies `Dockerfile`, `docker-compose.yml`, `.dockerignore` and the required bind mounts from the git repository. Because of that, you should build your images from source (e.g.: on your workstation) and then [pull them to a Registry](https://docs.docker.com/docker-hub/) (like Docker Hub).
+
+If a remote image does not exist, the update command falls back to running `git pull` and `docker compose build` inside the project directory. Make sure the project directory is a Git checkout of the project for `git pull` to run; otherwise the pull step is skipped and only the local build is attempted.
 
 # See also
 Do you need a script to do an initial server setup? Check out [this server setup script](https://gist.github.com/simonesestito/a15d11ca544e04865118b86834624084)

@@ -75,7 +75,10 @@ def update_project(project: Project):
     print_status('Stopping old containers')
     docker.compose_down(project.dir_path)
     print_status('Pulling new images')
-    docker.compose_pull(project.dir_path)
+    if not docker.compose_pull(project.dir_path):
+        print_status('Building images locally')
+        git.pull_repo(project.dir_path)
+        docker.compose_build(project.dir_path)
     print_status('Running new containers')
     docker.compose_up(project.dir_path)
     print_status('Removing unnecessary images')

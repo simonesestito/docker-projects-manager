@@ -17,11 +17,12 @@ along with "Docker Projects Manager".  If not, see <http://www.gnu.org/licenses/
 '''
 
 import os
+import re
 import sys
 import yaml
 from typing import List
 from utils.print import print_err, print_warn
-from utils.shell import run_interactive_command, run_quiet_command
+from utils.shell import run_captured_command, run_interactive_command, run_quiet_command
 
 def _compose_cmd(workdir: str, *args: List[str], exit_on_error: bool = True) -> int:
     return run_interactive_command(
@@ -38,22 +39,48 @@ def compose_down(dir: str, delete_volumes: bool = False):
     else:
         _compose_cmd(dir, 'down')
 
-def compose_pull(dir: str):
-    exit_code = _compose_cmd(dir, 'pull', exit_on_error=False)
+def compose_pull(dir: str) -> bool:
+    exit_code, output = run_captured_command(
+        'docker', 'compose', '--project-directory', dir, 'pull',
+        exit_on_error=False,
+    )
     if exit_code == 0:
-        return
+        return True
+
+    if _is_missing_remote_image(output):
+        print_warn('Remote images not found. A local build is required.')
+        return False
 
     images = _compose_images(dir)
     missing_images = [image for image in images if not _image_exists(image)]
     if images and not missing_images:
         print_warn('Could not pull images, but all required images exist locally. Continuing.')
-        return
+        return True
 
     if missing_images:
         print_err(f'Images not available locally: {", ".join(missing_images)}')
     else:
         print_err('Could not determine the required Compose images')
     sys.exit(exit_code)
+
+def compose_build(dir: str):
+    _compose_cmd(dir, 'build')
+
+
+_MISSING_REMOTE_IMAGE_PATTERNS = (
+    r'manifest unknown',
+    r'manifest for .* not found',
+    r'no such manifest',
+    r'failed to resolve reference .*: not found',
+    r'repository .*does not exist',
+)
+
+
+def _is_missing_remote_image(output: str) -> bool:
+    return any(
+        re.search(pattern, output, re.IGNORECASE)
+        for pattern in _MISSING_REMOTE_IMAGE_PATTERNS
+    )
 
 
 def _compose_images(dir: str) -> List[str]:

@@ -17,10 +17,18 @@ along with "Docker Projects Manager".  If not, see <http://www.gnu.org/licenses/
 '''
 
 import os
+from utils.print import print_warn
 from utils.shell import run_interactive_command
 
 def clone_repo_temp(git_url: str, dest_dir: str):
     run_interactive_command('git', 'clone', git_url, dest_dir, '--depth=1')
+
+def pull_repo(repo_dir: str):
+    if not os.path.exists(os.path.join(repo_dir, '.git')):
+        print_warn(f'{repo_dir} is not a Git repository. Skipping git pull.')
+        return
+
+    run_interactive_command('git', '-C', repo_dir, 'pull')
 
 def get_last_commit(repo_dir: str):
     with open(os.path.join(repo_dir, '.git', 'HEAD'), 'r') as git_head:

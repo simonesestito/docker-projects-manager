@@ -18,7 +18,7 @@ along with "Docker Projects Manager".  If not, see <http://www.gnu.org/licenses/
 
 import subprocess
 import sys
-from typing import List
+from typing import List, Tuple
 
 from utils.print import print_err
 
@@ -37,6 +37,30 @@ def run_interactive_command(*args: List[str], exit_on_error: bool = True) -> int
         sys.exit(exit_code)
 
     return exit_code
+
+
+def run_captured_command(*args: List[str], exit_on_error: bool = True) -> Tuple[int, str]:
+    print('> ' + ' '.join(args))
+    process = subprocess.Popen(
+        args,
+        stdin=sys.stdin,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    )
+
+    output_lines = []
+    for line in process.stdout:
+        print(line, end='')
+        output_lines.append(line)
+
+    exit_code = process.wait()
+    if exit_code and exit_on_error:
+        print_err(f'Interactive process terminated with exit code {exit_code}')
+        sys.exit(exit_code)
+
+    return exit_code, ''.join(output_lines)
 
 
 def run_quiet_command(*args: List[str]) -> subprocess.CompletedProcess:
