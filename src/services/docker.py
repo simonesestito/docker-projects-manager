@@ -17,12 +17,17 @@ along with "Docker Projects Manager".  If not, see <http://www.gnu.org/licenses/
 '''
 
 import os
+import sys
 import yaml
 from typing import List
-from utils.shell import run_interactive_command
+from utils.print import print_err, print_warn
+from utils.shell import run_interactive_command, run_quiet_command
 
-def _compose_cmd(workdir: str, *args: List[str]):
-    run_interactive_command('docker', 'compose', '--project-directory', workdir, *args)
+def _compose_cmd(workdir: str, *args: List[str], exit_on_error: bool = True) -> int:
+    return run_interactive_command(
+        'docker', 'compose', '--project-directory', workdir, *args,
+        exit_on_error=exit_on_error,
+    )
 
 def compose_up(dir: str):
     _compose_cmd(dir, 'up', '-d')
@@ -34,7 +39,34 @@ def compose_down(dir: str, delete_volumes: bool = False):
         _compose_cmd(dir, 'down')
 
 def compose_pull(dir: str):
-    _compose_cmd(dir, 'pull')
+    exit_code = _compose_cmd(dir, 'pull', exit_on_error=False)
+    if exit_code == 0:
+        return
+
+    images = _compose_images(dir)
+    missing_images = [image for image in images if not _image_exists(image)]
+    if images and not missing_images:
+        print_warn('Could not pull images, but all required images exist locally. Continuing.')
+        return
+
+    if missing_images:
+        print_err(f'Images not available locally: {", ".join(missing_images)}')
+    else:
+        print_err('Could not determine the required Compose images')
+    sys.exit(exit_code)
+
+
+def _compose_images(dir: str) -> List[str]:
+    result = run_quiet_command('docker', 'compose', '--project-directory', dir, 'config', '--images')
+    if result.returncode != 0:
+        return []
+    return list(dict.fromkeys(
+        line.strip() for line in result.stdout.splitlines() if line.strip()
+    ))
+
+
+def _image_exists(image: str) -> bool:
+    return run_quiet_command('docker', 'image', 'inspect', image).returncode == 0
 
 def prune(all: bool = False):
     run_interactive_command('docker', 'system' if all else 'image', 'prune', '-a', '-f')

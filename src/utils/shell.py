@@ -23,7 +23,7 @@ from typing import List
 from utils.print import print_err
 
 
-def run_interactive_command(*args: List[str]):
+def run_interactive_command(*args: List[str], exit_on_error: bool = True) -> int:
     print('> ' + ' '.join(args))
     exit_code = subprocess.Popen(
         args,
@@ -32,6 +32,18 @@ def run_interactive_command(*args: List[str]):
         stderr=sys.stderr,
     ).wait()
 
-    if exit_code:
+    if exit_code and exit_on_error:
         print_err(f'Interactive process terminated with exit code {exit_code}')
         sys.exit(exit_code)
+
+    return exit_code
+
+
+def run_quiet_command(*args: List[str]) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        args,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
